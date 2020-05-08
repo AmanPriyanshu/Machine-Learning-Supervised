@@ -1,9 +1,17 @@
+from data_reader import main
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
-def data_extractor(path):
-	data = pd.read_csv(path)
-	data = data.values
+X, Y = main('./Data/abalone_C1_P02_V01_CA0.csv')
 
-path = ''
+def gini_impurity(X, Y, nodes):
+	gi = 0
+	for n in range(len(nodes)):
+		A = [0 if i<=nodes[n] else 1 for i in X.T[n]]
+		p_i = np.sum(np.absolute(A-Y))/Y.shape[0]
+		g_i = p_i*(1-p_i)
+		gi += g_i
+	return gi
+
+def random_forest(X, Y, depth, ):
+	print(X)
+
