@@ -70,7 +70,7 @@ The two moments in Gradient Descent, i.e.  The first moment is mean, and the sec
 
 dW here, is the derivative of the Weights. dW^2 is double differential.
 m(t) and v(t) are intialized as zeroes whereas, beta_1 and beta_2 are initialized as ones. As m(t) and v(t) are initialized as vectors of 0's, the authors of Adam observe that they are biased towards zero, especially during the initial time steps, and especially when the decay rates are small (i.e. beta_1 and beta_2 are close to 1).
-They counteract these biases by computing bias-corrected first and second moment estimates:
+They counteract these biases by computing bias-corrected first and second moment estimates:<https://stats.stackexchange.com/questions/232741/why-is-it-important-to-include-a-bias-correction-term-for-the-adam-optimizer-for>
 
 `m_corrected(t) = m(t)/(1 - beta_1^t)`
 
@@ -79,14 +79,36 @@ They counteract these biases by computing bias-corrected first and second moment
 Now we know that beta tends to 1 so as time (t) progresses this value: beta^t tends to zero, or lower than 1 towards 0. Therefore as time progresses, we can se that v(t) or m(t) have a larger effect on v_corrected or m_corrected as compared to when starting off.
 They then use these to update the parameters:
 
-`weight(t+1) = weight(t) - alpha * m_corrected(t)/(sqrt(v_corrected) + epsilon)`
+`weight(t+1) = weight(t) - alpha * m_corrected(t)/(sqrt(v_corrected(t)) + epsilon)`
 
 This is the final step at which the weights are updated after which it iterates through the above steps to reduce its Cost and learn to understand the Dataset better. So what exactly is happening, basically let us take a look at two iterations.
 We begin with 
 
-`m(0) = beta_1 * m(-1) + (1 - beta_1) * dW(t)`,
+`m(1) = beta_1 * m(0) + (1 - beta_1) * dW(1)`,
 
-here we know that beta_1 ~ 1 and m(-1) = 0, so effectively the above formula becomes:
-`m(0) = (1 - beta_1) * dW(t)` or since beta_1 tends to it can be effectively re-interpreted as `m(0) = alpha * dW(0)`.
-which we had earlier used to show gradient descent (gd) (Here alpha is only used for better representation and has no correlation with any other alpha ever mentioned before or after). On the other hand,
-`v(0) = beta_2 * m(-1) + (1 - beta_2) * dW(0)^2`, tells us that v(0) effectively is: `v(0) = (1 - beta_2) * dW(0)^2`. Which is to say, `v(0) = alpha * dW(0)^2`
+here we know that beta_1 ~ 1 and m(0) = 0, so effectively the above formula becomes:
+`m(1) = (1 - beta_1) * dW(1)` or since beta_1 tends to it can be effectively re-interpreted as `m(1) = alpha * dW(1)`.
+which we had earlier used to show gradient descent (gd) (Here alpha is only used for better representation and has no correlation with any other alpha ever mentioned before or after). 
+
+On the other hand,
+`v(1) = beta_2 * m(0) + (1 - beta_2) * dW(1)^2`, tells us that v(0) effectively is: `v(1) = (1 - beta_2) * dW(1)^2`. Which is to say, `v(1) = alpha * dW(1)^2`.
+
+Following this:
+we find the corrected versions of both of them:
+
+`m_corrected(1) = m(1)/(1 - beta_1^1)` and `v_corrected(1) = v(1)/(1 - beta_2^1)` we will see that (1-beta_1) or (1-beta_2) is very very small, therefore m_corrected is much greater than m(1). Continuing on to weight update,
+
+`weight(2) = weight(1) - alpha * m_corrected(1)/(sqrt(v_corrected(1)) + epsilon)`. 
+
+This means that, basically we are calculating weight(2) = weight(1) - alpha * (dW(1)/( sqrt(dW^2(1)) )). Which means that we are updating the weight in such a way that, we not only approach the closest minima but also they are affected by their double differentiation, i.e.,  thereby allowing them to settle, on a more stable minima. As we know there are different types of minima, where a strong global minima will be clearly highlighted because of the second gradient or as the authors call it variance. Finally, let us begin second iteration:
+
+`m(2) = beta_1 * m(1) + (1 - beta_1) * dW(2)`,
+
+we can see it takes into account the previous moment, so we can understand that it is taking a general averge of the moments as number of iterations increases and as t increases we forget the initial moments so basically leading to a MOVING AVERAGE method.
+
+We see the same development for v as well, as we continue we can also see that m_corrected and v_corrected reduce, leading to a smaller learning rate, thereby never allowing overshooting.
+
+ADVANTAGES:
+
+1. Effective Learning Rate is dynamic for each weight allowing independent learning.
+2. Dynamic effective learning rate which initally is very large and reduces as t or iterations progresses allows for faster learning and then also a better way to not overshoot.
