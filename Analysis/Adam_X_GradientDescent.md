@@ -62,3 +62,31 @@ Adam uses estimations of first and second moments of gradient to adapt the learn
 #### Moment:
 N-th moment of a random variable is defined as the expected value of that variable to the power of n. Basically: it can be written as,
 `m = E(X^n)`
+The two moments in Gradient Descent, i.e.  The first moment is mean, and the second moment is uncentered variance. They are both given by:
+
+`m(t) = beta_1 * m(t-1) + (1 - beta_1) * dW(t)`
+
+`v(t) = beta_2 * m(t-1) + (1 - beta_2) * dW(t)^2`
+
+dW here, is the derivative of the Weights. dW^2 is double differential.
+m(t) and v(t) are intialized as zeroes whereas, beta_1 and beta_2 are initialized as ones. As m(t) and v(t) are initialized as vectors of 0's, the authors of Adam observe that they are biased towards zero, especially during the initial time steps, and especially when the decay rates are small (i.e. beta_1 and beta_2 are close to 1).
+They counteract these biases by computing bias-corrected first and second moment estimates:
+
+`m_corrected(t) = m(t)/(1 - beta_1^t)`
+
+`v_corrected(t) = v(t)/(1 - beta_2^t)`
+
+Now we know that beta tends to 1 so as time (t) progresses this value: beta^t tends to zero, or lower than 1 towards 0. Therefore as time progresses, we can se that v(t) or m(t) have a larger effect on v_corrected or m_corrected as compared to when starting off.
+They then use these to update the parameters:
+
+`weight(t+1) = weight(t) - alpha * m_corrected(t)/(sqrt(v_corrected) + epsilon)`
+
+This is the final step at which the weights are updated after which it iterates through the above steps to reduce its Cost and learn to understand the Dataset better. So what exactly is happening, basically let us take a look at two iterations.
+We begin with 
+
+`m(0) = beta_1 * m(-1) + (1 - beta_1) * dW(t)`,
+
+here we know that beta_1 ~ 1 and m(-1) = 0, so effectively the above formula becomes:
+`m(0) = (1 - beta_1) * dW(t)` or since beta_1 tends to it can be effectively re-interpreted as `m(0) = alpha * dW(0)`.
+which we had earlier used to show gradient descent (gd) (Here alpha is only used for better representation and has no correlation with any other alpha ever mentioned before or after). On the other hand,
+`v(0) = beta_2 * m(-1) + (1 - beta_2) * dW(0)^2`, tells us that v(0) effectively is: `v(0) = (1 - beta_2) * dW(0)^2`. Which is to say, `v(0) = alpha * dW(0)^2`
