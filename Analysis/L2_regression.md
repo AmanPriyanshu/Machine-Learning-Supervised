@@ -42,3 +42,11 @@ If we attempt to differentiate both of them we get the following:
 1. Take a look at L1, If w is positive, the regularisation parameter λ>0 will push w to be less positive, by subtracting λ from w. Conversely, if w is negative, λ will be added to w, pushing it to be less negative. Hence, this has the effect of pushing w towards 0.
 As mentioned above, as w goes to 0, we are reducing the number of features by reducing the variable importance. In the equation above, we see that x_2, x_4 and x_5 are almost ‘useless’ because of their small coefficients, hence we can remove them from the equation. This in turn reduces the model complexity, making our model simpler. A simpler model can reduce the chances of overfitting.
 2. Taking a look at L2, we can see that though it originally does not create sparse models, it can however, create a much elegant and uniformed regularization. It allows for regularizing over a near spaced data.
+
+3. MUTLICOLLINEARIY: L1 regularization can address the multicollinearity problem by constraining the coefficient norm and pinning some coefficient values to 0. Computationally, Lasso regression (regression with an L1 penalty) is a quadratic program which requires some special tools to solve. When you have more features than observations N, lasso will keep at most N non-zero coefficients. Depending on context, that might not be what you want.
+
+L1 regularization is sometimes used as a feature selection method. Suppose you have some kind of hard cap on the number of features you can use (because data collection for all features is expensive, or you have tight engineering constraints on how many values you can store, etc.). You can try to tune the L1 penalty to hit your desired number of non-zero features.
+
+L2 regularization can address the multicollinearity problem by constraining the coefficient norm and keeping all the variables. It's unlikely to estimate a coefficient to be exactly 0. This isn't necessarily a drawback, unless a sparse coefficient vector is important for some reason.
+
+In the regression setting, it's the "classic" solution to the problem of estimating a regression with more features than observations. L2 regularization can estimate a coefficient for each feature even if there are more features than observations (indeed, this was the original motivation for "ridge regression").
